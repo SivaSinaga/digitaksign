@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Signature RSA</title>
+</head>
+<body>
+  <h1>Digital Signature RSA + SHA-256</h1>
+
+  <h2>Sign Pesan</h2>
+  <textarea id="pesan" rows="4" cols="50" placeholder="Tulis pesan..."></textarea><br>
+  <button onclick="signPesan()">Sign</button>
+  <pre id="hasil-sign"></pre>
+
+  <h2>Verify Pesan</h2>
+  <textarea id="verify-pesan" rows="4" cols="50" placeholder="Pesan asli..."></textarea><br>
+  <textarea id="verify-sig" rows="4" cols="50" placeholder="Paste signature di sini..."></textarea><br>
+  <button onclick="verifyPesan()">Verify</button>
+  <p id="hasil-verify"></p>
+
+  <script>
+    async function signPesan() {
+      var pesan = document.getElementById("pesan").value;
+      var res = await fetch("/sign", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({pesan: pesan})
+      });
+      var d = await res.json();
+      document.getElementById("hasil-sign").textContent = "Hash: " + d.hash + "\nSignature: " + d.signature;
+      document.getElementById("verify-pesan").value = pesan;
+      document.getElementById("verify-sig").value = d.signature;
+    }
+
+    async function verifyPesan() {
+      var pesan = document.getElementById("verify-pesan").value;
+      var sig = document.getElementById("verify-sig").value;
+      var res = await fetch("/verify", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({pesan: pesan, signature: sig})
+      });
+      var d = await res.json();
+      document.getElementById("hasil-verify").textContent = d.valid ? "VALID" : "INVALID";
+    }
+  </script>
+</body>
+</html>
