@@ -7,13 +7,15 @@ import os
 
 app = Flask(__name__)
 
-def load_keys():
-    with open("private.pem","rb") as f:
-        priv = serialization.load_pem_private_key(f.read(), password=None)
-    with open("public.pem","rb") as f:
-        pub = serialization.load_pem_public_key(f.read())
-    return priv, pub
+PRIVATE_KEY_PEM = os.environ.get("PRIVATE_KEY")
+PUBLIC_KEY_PEM = os.environ.get("PUBLIC_KEY")
 
+def load_keys():
+    priv = serialization.load_pem_private_key(
+        PRIVATE_KEY_PEM.encode(), password=None)
+    pub = serialization.load_pem_public_key(
+        PUBLIC_KEY_PEM.encode())
+    return priv, pub
 @app.route("/")
 def index():
     return render_template("index.html")
