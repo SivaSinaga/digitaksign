@@ -42,6 +42,10 @@ def verify():
         return jsonify({"valid": True})
     except InvalidSignature:
         return jsonify({"valid": False})
+def load_keys():
+    print("PRIVATE_KEY value:", repr(PRIVATE_KEY_PEM[:50] if PRIVATE_KEY_PEM else "NONE"))
+    priv = serialization.load_pem_private_key(
+        PRIVATE_KEY_PEM.encode(), password=None)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
